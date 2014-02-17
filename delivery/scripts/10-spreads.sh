@@ -11,7 +11,7 @@ apt-get -y remove libgphoto2*
 apt-get -y autoremove
 
 # install i386 chdkptp
-tar xzf $DELIVERY_DIR/files/usr.local.tar.gz -C / || exit 1
+tar xzf $DELIVERY_DIR/files/i386.usr.local.tar.gz -C / || exit 1
 
 # Get newest pip version
 pip install --upgrade pip || exit 1
@@ -25,16 +25,17 @@ pip install cffi || exit 1
 # Install spreads from GitHub
 git clone https://github.com/jbaiter/spreads.git /usr/src/spreads || exit 1
 cd /usr/src/spreads || exit 1
-git checkout webplugin || exit 1
 # https://github.com/openxc/openxc-python/issues/18
 pip install --pre pyusb || exit 1
-pip install colorama futures flask flask-compress zipstream \
-		waitress requests jpegtran-cffi || exit 1
-pip install git+https://github.com/dreamhost/stevedore.git@0.13
+pip install -e .[web] || exit 1
 python setup.py install || exit 1
 
 # Install cython-hidapi from GitHub
 pip install git+https://github.com/gbishop/cython-hidapi.git || exit 1
+
+# Create spreads configuration directoy
+mkdir -p /etc/skel/.config/spreads || exit 1
+cp $DELIVERY_DIR/files/config.yaml /etc/skel/.config/spreads || exit 1
 
 mkdir -p /var/log/spreads || exit 1
 chmod a+rw /var/log/spreads || exit 1
